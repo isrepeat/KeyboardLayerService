@@ -155,16 +155,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InterceptionKeyCodeMapper.cpp" />
     <ClCompile Include="KeyboardLayerEngine.cpp" />
+    <ClCompile Include="LogicalKeyGroup.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SimpleKeyBlocker.cpp" />
+    <ClCompile Include="SimpleKeyRemapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceInfo.h" />
     <ClInclude Include="HidKeyCodes.h" />
     <ClInclude Include="InterceptionKeyCode.h" />
+    <ClInclude Include="InterceptionKeyCodeMapper.h" />
     <ClInclude Include="KeyboardLayerEngine.h" />
-    <ClInclude Include="KeyFilter.h" />
+    <ClInclude Include="IKeyCodeMapper.h" />
+    <ClInclude Include="IKeyFilter.h" />
+    <ClInclude Include="IKeyRemapper.h" />
+    <ClInclude Include="LogicalKey.h" />
+    <ClInclude Include="LogicalKeyGroup.h" />
     <ClInclude Include="SimpleKeyBlocker.h" />
+    <ClInclude Include="SimpleKeyRemapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

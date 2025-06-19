@@ -1,20 +1,20 @@
 #pragma once
-#include "KeyFilter.h"
+#include "IKeyCodeMapper.h"
+#include "IKeyFilter.h"
+#include <memory>
 #include <set>
 
-class SimpleKeyBlocker : public KeyFilter {
+class SimpleKeyBlocker : public IKeyFilter {
 public:
-	SimpleKeyBlocker(const std::wstring& blockedDeviceIdPart, std::set<int> blockedKeys)
-		: deviceIdPart(blockedDeviceIdPart), keysToBlock(std::move(blockedKeys)) {}
+	SimpleKeyBlocker(
+		std::wstring deviceIdMatch,
+		std::set<LogicalKey> logicalKeysToBlock,
+		std::shared_ptr<IKeyCodeMapper> keyCodeMapper);
 
-	bool ShouldBlock(const DeviceInfo& device, const InterceptionKeyStroke& stroke) const override {
-		if (device.hardwareId.find(deviceIdPart) != std::wstring::npos) {
-			return keysToBlock.contains(stroke.code);
-		}
-		return false;
-	}
+	bool ShouldBlock(const DeviceInfo& device, const InterceptionKeyStroke& stroke) const override;
 
 private:
 	std::wstring deviceIdPart;
-	std::set<int> keysToBlock;
+	std::set<LogicalKey> keysToBlock;
+	std::shared_ptr<IKeyCodeMapper> keyCodeMapper;
 };

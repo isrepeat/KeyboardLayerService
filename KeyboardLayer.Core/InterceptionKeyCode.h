@@ -28,6 +28,15 @@ enum class InterceptionKeyCode {
 	X = 0x2D,
 	Y = 0x15,
 	Z = 0x2C,
+	LeftBracket = 0x1A,
+	RightBracket = 0x1B,
+	Backslash = 0x2B,   
+	Slash = 0x35,
+	Semicolon = 0x27,
+	Apostrophe = 0x28,
+	Comma = 0x33,
+	Period = 0x34,
+	Oem3 = 0x29, // Tilde
 
 	// Digits
 	Digit1 = 0x02,
@@ -40,6 +49,8 @@ enum class InterceptionKeyCode {
 	Digit8 = 0x09,
 	Digit9 = 0x0A,
 	Digit0 = 0x0B,
+	Minus = 0x0C,
+	Plus = 0x0D,
 
 	// Controls
 	Enter = 0x1C,
@@ -48,6 +59,8 @@ enum class InterceptionKeyCode {
 	Tab = 0x0F,
 	Space = 0x39,
 	CapsLock = 0x3A,
+	Insert = 0x52,
+	Delete = 0x53,
 
 	// Function keys
 	F1 = 0x3B,
@@ -63,36 +76,46 @@ enum class InterceptionKeyCode {
 	F11 = 0x57,
 	F12 = 0x58,
 
-	// Arrows and navigation (extended codes)
-	Insert = 0xD2,
-	Delete = 0xD3,
-	Home = 0xC7,
-	End = 0xCF,
-	PageUp = 0xC9,
-	PageDown = 0xD1,
-	ArrowUp = 0xC8,
-	ArrowDown = 0xD0,
-	ArrowLeft = 0xCB,
-	ArrowRight = 0xCD,
+	// Arrows and navigation
+	ArrowUp = 0x48,
+	ArrowDown = 0x50,
+	ArrowLeft = 0x4B,
+	ArrowRight = 0x4D,
+	Home = 0x47,
+	End = 0x4F,
+	PageUp = 0x49,
+	PageDown = 0x51,
+
+	//// Arrows and navigation (extended codes)
+	//Insert = 0xD2,
+	//Delete = 0xD3,
+	//Home = 0xC7,
+	//End = 0xCF,
+	//PageUp = 0xC9,
+	//PageDown = 0xD1,
+	//ArrowUp = 0xC8,
+	//ArrowDown = 0xD0,
+	//ArrowLeft = 0xCB,
+	//ArrowRight = 0xCD,
 
 	// Numpad
 	NumLock = 0x45,
-	NumpadSlash = 0xB5,
-	NumpadAsterisk = 0x37,
-	NumpadMinus = 0x4A,
 	NumpadPlus = 0x4E,
-	NumpadEnter = 0x9C,
-	Numpad1 = 0x4F,
-	Numpad2 = 0x50,
-	Numpad3 = 0x51,
-	Numpad4 = 0x4B,
+	NumpadMinus = 0x4A,
+	NumpadAsterisk = 0x37,
+	NumpadSlash = 0xB5,
+	Numpad1 = 0x4F, // End
+	Numpad2 = 0x50, // ArrowDown
+	Numpad3 = 0x51, // PageDown
+	Numpad4 = 0x4B, // ArrowLeft
 	Numpad5 = 0x4C,
-	Numpad6 = 0x4D,
-	Numpad7 = 0x47,
-	Numpad8 = 0x48,
-	Numpad9 = 0x49,
-	Numpad0 = 0x52,
-	NumpadDot = 0x53,
+	Numpad6 = 0x4D, // ArrowRight
+	Numpad7 = 0x47, // Home
+	Numpad8 = 0x48, // ArrowUp
+	Numpad9 = 0x49, // PageUp
+	Numpad0 = 0x52, // Insert
+	NumpadEnter = 0x9C,
+	NumpadDot = 0x53, // Delete
 
 	// Modifiers
 	LeftCtrl = 0x1D,
@@ -103,7 +126,4 @@ enum class InterceptionKeyCode {
 	RightAlt = 0xB8,
 	LeftWin = 0xDB,
 	RightWin = 0xDC,
-
-	// Fn (псевдо)
-	FnKey = 0xFFFF  // для логики, не соответствует настоящему сканкоду
 };

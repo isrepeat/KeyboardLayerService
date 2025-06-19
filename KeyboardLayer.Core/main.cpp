@@ -1,19 +1,49 @@
 #include "KeyboardLayerEngine.h"
-#include "InterceptionKeyCode.h"
+#include "InterceptionKeyCodeMapper.h"
+#include "SimpleKeyRemapper.h"
 #include "SimpleKeyBlocker.h"
-#include "HidKeyCodes.h"
+#include "LogicalKeyGroup.h"
 
 #pragma comment (lib, "interception.lib")
 
 int main() {
-	std::set<int> blockedKeys = {
-		static_cast<int>(InterceptionKeyCode::W),
-		static_cast<int>(InterceptionKeyCode::Space),
-	};
-	std::wstring targetKeyboardIdPart = L"ACPI\\VEN_ATK&DEV_3001";
+	auto keyCodeMapper = std::make_shared<InterceptionKeyCodeMapper>();
 
-	auto filter = std::make_unique<SimpleKeyBlocker>(targetKeyboardIdPart, blockedKeys);
-	KeyboardLayerEngine engine(std::move(filter));
+	auto remapKeys = std::map<LogicalKey, LogicalKey>{
+		//{ LogicalKey::T, LogicalKey::Digit6 },
+		//{ LogicalKey::U, LogicalKey::Digit7 },
+	};
+	auto remapper = std::make_unique<SimpleKeyRemapper>(
+		remapKeys,
+		keyCodeMapper
+	);
+
+
+	//auto blockingKeys = std::set<LogicalKey>{
+	//	LogicalKey::W,
+	//	LogicalKey::T,
+	//	LogicalKey::Space,
+	//};
+	auto blockingKeys =
+		LogicalKeyGroup::Arrows() |
+		LogicalKeyGroup::Digits() |
+		LogicalKeyGroup::Numpad() |
+		LogicalKeyGroup::Letters() |
+		LogicalKeyGroup::Modifiers() |
+		LogicalKeyGroup::ControlKeys() |
+		LogicalKeyGroup::FunctionKeys();
+
+	auto blocker = std::make_unique<SimpleKeyBlocker>(
+		L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
+		blockingKeys.GetKeys(),
+		keyCodeMapper
+	);
+
+
+	auto engine = KeyboardLayerEngine(
+		std::move(blocker),
+		std::move(remapper)
+	);
 	engine.Run();
 
 	return 0;

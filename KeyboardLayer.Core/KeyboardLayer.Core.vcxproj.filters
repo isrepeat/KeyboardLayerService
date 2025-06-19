@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\KeyCode">
+      <UniqueIdentifier>{c17e2e32-9b30-4492-ae83-d0ffbb3ee832}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -13,12 +16,24 @@
     <ClCompile Include="KeyboardLayerEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InterceptionKeyCodeMapper.cpp">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleKeyBlocker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleKeyRemapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogicalKeyGroup.cpp">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceInfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="KeyFilter.h">
+    <ClInclude Include="IKeyFilter.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="SimpleKeyBlocker.h">
@@ -27,11 +42,29 @@
     <ClInclude Include="KeyboardLayerEngine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="HidKeyCodes.h">
+    <ClInclude Include="IKeyRemapper.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterceptionKeyCode.h">
+    <ClInclude Include="SimpleKeyRemapper.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HidKeyCodes.h">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClInclude>
+    <ClInclude Include="InterceptionKeyCode.h">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClInclude>
+    <ClInclude Include="InterceptionKeyCodeMapper.h">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClInclude>
+    <ClInclude Include="IKeyCodeMapper.h">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicalKey.h">
+      <Filter>Source Files\KeyCode</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicalKeyGroup.h">
+      <Filter>Source Files\KeyCode</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
