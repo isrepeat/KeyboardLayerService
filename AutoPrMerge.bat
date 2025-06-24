@@ -32,6 +32,7 @@ SET Body=Auto-generated PR from script
 REM --- Push current branch ---
 git push origin %Head%
 
+
 REM --- Create Pull Request ---
 ECHO Creating Pull Request...
 gh pr create --title "%Title%" --body "%Body%" --base "%Base%" --head "%Head%"
@@ -40,6 +41,7 @@ IF ERRORLEVEL 1 (
     PAUSE
     EXIT /B
 )
+
 
 REM --- Get PR number using gh CLI JSON parsing ---
 FOR /F "delims=" %%I IN ('gh pr list --state open --head "%Head%" --json number --jq ".[0].number"') DO SET PR_Number=%%I
@@ -52,6 +54,7 @@ IF NOT DEFINED PR_Number (
 
 ECHO Pull Request created with number #%PR_Number%
 
+
 REM --- Merge Pull Request ---
 ECHO Merging Pull Request...
 gh pr merge %PR_Number% --merge --subject "Merge PR #%PR_Number% %Title%"
@@ -63,8 +66,10 @@ IF ERRORLEVEL 1 (
 
 ECHO Pull Request #%PR_Number% successfully merged.
 
+
 REM --- Get repo owner/name path ---
 FOR /F "tokens=*" %%I IN ('gh repo view --json nameWithOwner --jq ".nameWithOwner"') DO SET RepoPath=%%I
+
 
 REM --- Delete source branch via GitHub API ---
 ECHO Deleting source branch %Head%...
@@ -76,6 +81,7 @@ IF ERRORLEVEL 1 (
 )
 
 ECHO Source branch %Head% successfully deleted.
+
 
 REM --- Prune deleted branches locally ---
 ECHO Cleaning up local references...
@@ -92,22 +98,29 @@ ECHO Local references successfully pruned.
 REM --- Handle optional new branch logic ---
 IF NOT "%NewBranch%"=="" (
 
-    REM Determine current local branch
+    REM --- Get the name of the currently checked-out local branch ---
     FOR /F "delims=" %%b IN ('git branch --show-current') DO SET CurrentBranch=%%b
-	ECHO Current branch: [!CurrentBranch!]
-	ECHO Head branch:    [%Head%]
 
+    REM --- Debug output: current branch and the merged source branch ---
+    ECHO Current branch: [!CurrentBranch!]
+    ECHO Head branch:    [%Head%]
+
+    REM --- If we are still on the merged source branch (Head) ---
     IF "!CurrentBranch!"=="%Head%" (
+        REM --- Rename the current branch to the new branch name ---
         ECHO Renaming local branch "%Head%" to "%NewBranch%"...
         git branch -m "%NewBranch%"
     ) ELSE (
+        REM --- Otherwise, delete the local source branch ---
         ECHO Deleting local branch "%Head%"...
         git branch -D "%Head%"
 
+        REM --- Create a new branch from origin/Base without tracking ---
         ECHO Creating new branch "%NewBranch%" from origin/%Base%...
         git checkout --no-track -b "%NewBranch%" "origin/%Base%"
     )
 
+    REM --- Rebase the new branch onto the latest base from origin ---
     ECHO Rebasing "%NewBranch%" onto origin/%Base%"...
     git rebase "origin/%Base%"
 )
