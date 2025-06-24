@@ -26,17 +26,6 @@ SET /P Base=Enter Target Branch (base):
 SET /P Title=Enter Pull Request Title: 
 SET /P NewBranch=Enter optional new branch name (leave empty to skip): 
 
-REM FOR /F "usebackq delims=" %%b IN (`git rev-parse --abbrev-ref HEAD`) DO SET CurrentBranch=%%b
-
-REM FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO ( SET "CurrentBranch=%%b" )
-
-REM ECHO Current branch: [%CurrentBranch%]
-REM ECHO Head branch:    [%Head%]
-
-REM PAUSE
-REM EXIT /B
-
-
 REM --- Optional body ---
 SET Body=Auto-generated PR from script
 
@@ -63,11 +52,6 @@ IF NOT DEFINED PR_Number (
 
 ECHO Pull Request created with number #%PR_Number%
 
-FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO (
-	SET "CurrentBranch_1=%%b"
-)
-ECHO Current branch #1: [%CurrentBranch_1%]
-
 REM --- Merge Pull Request ---
 ECHO Merging Pull Request...
 gh pr merge %PR_Number% --merge --subject "Merge PR #%PR_Number% %Title%"
@@ -78,12 +62,6 @@ IF ERRORLEVEL 1 (
 )
 
 ECHO Pull Request #%PR_Number% successfully merged.
-
-
-FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO (
-	SET "CurrentBranch_2=%%b"
-)
-ECHO Current branch #2: [%CurrentBranch_2%]
 
 REM --- Get repo owner/name path ---
 FOR /F "tokens=*" %%I IN ('gh repo view --json nameWithOwner --jq ".nameWithOwner"') DO SET RepoPath=%%I
@@ -99,13 +77,6 @@ IF ERRORLEVEL 1 (
 
 ECHO Source branch %Head% successfully deleted.
 
-
-FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO (
-	SET "CurrentBranch_3=%%b"
-)
-ECHO Current branch #3: [%CurrentBranch_3%]
-
-
 REM --- Prune deleted branches locally ---
 ECHO Cleaning up local references...
 git fetch origin --prune
@@ -118,19 +89,27 @@ IF ERRORLEVEL 1 (
 ECHO Local references successfully pruned.
 
 
-FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO (
-	SET "CurrentBranch_4=%%b"
-)
-ECHO Current branch #4: [%CurrentBranch_4%]
-
-
+REM --- Handle optional new branch logic ---
 IF NOT "%NewBranch%"=="" (
-	FOR /F "delims=" %%b IN ('git rev-parse --abbrev-ref HEAD') DO (
-		SET "CurrentBranch_5=%%b"
-	)
 
-	ECHO Current branch #5: [!CurrentBranch_5!]
+    REM Determine current local branch
+    FOR /F "delims=" %%b IN ('git branch --show-current') DO SET CurrentBranch=%%b
+	ECHO Current branch: [!CurrentBranch!]
 	ECHO Head branch:    [%Head%]
+
+    IF "!CurrentBranch!"=="%Head%" (
+        ECHO Renaming local branch "%Head%" to "%NewBranch%"...
+        git branch -m "%NewBranch%"
+    ) ELSE (
+        ECHO Deleting local branch "%Head%"...
+        git branch -D "%Head%"
+
+        ECHO Creating new branch "%NewBranch%" from origin/%Base%...
+        git checkout --no-track -b "%NewBranch%" "origin/%Base%"
+    )
+
+    ECHO Rebasing "%NewBranch%" onto origin/%Base%"...
+    git rebase "origin/%Base%"
 )
 
 

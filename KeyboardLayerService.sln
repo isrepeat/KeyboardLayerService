@@ -51,6 +51,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyboardLayer.Core", "KeyboardLayer.Core\KeyboardLayer.Core.vcxproj", "{3B1413E0-4958-4AA1-A2B5-E3AB2295F048}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution", "!Solution", "{FC3456D9-962B-46B5-A17F-08A24E2B1671}"
+	ProjectSection(SolutionItems) = preProject
+		AutoPrMerge.bat = AutoPrMerge.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
