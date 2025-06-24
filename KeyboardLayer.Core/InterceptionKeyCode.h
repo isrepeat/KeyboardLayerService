@@ -124,6 +124,6 @@ enum class InterceptionKeyCode {
 	RightShift = 0x36,
 	LeftAlt = 0x38,
 	RightAlt = 0xB8,
-	LeftWin = 0xDB,
-	RightWin = 0xDC,
+	LeftWin = 0x5B,
+	RightWin = 0x5C,
 };

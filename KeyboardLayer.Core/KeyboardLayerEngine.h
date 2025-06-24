@@ -4,6 +4,7 @@
 #include "IKeyFilter.h"
 #include "DeviceInfo.h"
 #include <memory>
+#include <thread>
 
 class KeyboardLayerEngine {
 public:
@@ -11,7 +12,7 @@ public:
 		std::unique_ptr<IKeyFilter> keyFilter,
 		std::unique_ptr<IKeyRemapper> keyRemapper);
 
-	void Run();
+	void Run(std::stop_token stopToken);
 
 private:
 	std::unique_ptr<IKeyFilter> keyFilter;

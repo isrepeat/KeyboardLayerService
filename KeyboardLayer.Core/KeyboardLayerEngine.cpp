@@ -1,4 +1,5 @@
-﻿#include "KeyboardLayerEngine.h"
+﻿#include <Helpers/Logger.h>
+#include "KeyboardLayerEngine.h"
 #include <iostream>
 
 KeyboardLayerEngine::KeyboardLayerEngine(
@@ -11,23 +12,28 @@ KeyboardLayerEngine::KeyboardLayerEngine(
 	interception_set_filter(this->context, interception_is_keyboard, INTERCEPTION_FILTER_KEY_ALL);
 }
 
-void KeyboardLayerEngine::Run() {
-	std::wcout << L"[KeyboardLayer] Running...\n";
+void KeyboardLayerEngine::Run(std::stop_token stopToken) {
+	LOG_FUNCTION_SCOPE("Run()");
 
-	while (true) {
-		InterceptionDevice device = interception_wait(this->context);
-		if (!interception_is_keyboard(device))
+	while (!stopToken.stop_requested()) {
+		InterceptionDevice device = interception_wait_with_timeout(this->context, 500);
+		if (device == 0) {
+			continue; // timeout, нет ввода
+		}
+
+		if (!interception_is_keyboard(device)) {
 			continue;
+		}
 
 		InterceptionStroke stroke;
-		if (interception_receive(this->context, device, &stroke, 1) <= 0)
+		if (interception_receive(this->context, device, &stroke, 1) <= 0) {
 			continue;
+		}
 
 		InterceptionKeyStroke& key = (InterceptionKeyStroke&)stroke;
-		DeviceInfo deviceInfo = GetDeviceInfo(device);
+		DeviceInfo deviceInfo = this->GetDeviceInfo(device);
 
-		std::wcout << L"Key code: " << key.code << L"\n";
-
+		LOG_DEBUG_D("Key code: {}", key.code);
 
 		// Подмена клавиш
 		if (this->keyRemapper && this->keyRemapper->ShouldRemap(deviceInfo, key)) {
@@ -39,13 +45,20 @@ void KeyboardLayerEngine::Run() {
 			// См. remapped.state — он должен совпадать с оригиналом.
 			interception_send(this->context, device, (const InterceptionStroke*)&remapped, 1);
 
-			std::wcout << L"[Remapped] code " << key.code << L" => " << remapped.code << L" on device " << device << std::endl;
+			LOG_DEBUG_D("[Remapped] Key code: {}  => {} on device {}"
+				, key.code
+				, remapped.code
+				, device
+			);
 			continue;
 		}
 
 		// Блокировка клавиш
 		if (this->keyFilter && this->keyFilter->ShouldBlock(deviceInfo, key)) {
-			std::wcout << L"[Blocked] key code " << key.code << L" from device " << device << std::endl;
+			LOG_DEBUG_D("[Blocked] Key code: {} from device {}"
+				, key.code
+				, device
+			);
 			continue;
 		}
 
@@ -63,6 +76,5 @@ std::wstring KeyboardLayerEngine::GetHardwareId(int device) {
 }
 
 DeviceInfo KeyboardLayerEngine::GetDeviceInfo(int device) {
-	return DeviceInfo{ device, GetHardwareId(device) };
+	return DeviceInfo{ device, this->GetHardwareId(device) };
 }
-

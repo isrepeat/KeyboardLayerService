@@ -1,15 +1,53 @@
+#include <Helpers/Win32/MainWindow.h>
+#include <Helpers/Win32/TrayWindow.h>
+#include <Helpers/Logger.h>
+
 #include "KeyboardLayerEngine.h"
 #include "InterceptionKeyCodeMapper.h"
 #include "SimpleKeyRemapper.h"
 #include "SimpleKeyBlocker.h"
 #include "LogicalKeyGroup.h"
 
+#include <shellapi.h>
+#include <windows.h>
+
 #pragma comment (lib, "interception.lib")
 
-int main() {
-	auto keyCodeMapper = std::make_shared<InterceptionKeyCodeMapper>();
 
+void KeybooardLayerRoutine(std::stop_token stopToken);
+
+int WINAPI WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR     lpCmdLine,
+	int       nCmdShow
+) {
+	std::jthread workRoutineThread(::KeybooardLayerRoutine);
+
+	try {
+		HICON trayIcon = ::LoadIconW(nullptr, IDI_APPLICATION); // системная иконка
+
+		auto trayWindow = H::Win32::TrayWindow{ hInstance, trayIcon, L"My Tray App" };
+		trayWindow.RunMessageLoop();
+		workRoutineThread.request_stop();
+	}
+	catch (const std::exception& ex) {
+		LOG_ERROR_D("ex = {}", ex.what());
+		workRoutineThread.request_stop();
+	}
+
+	if (workRoutineThread.joinable())
+		workRoutineThread.join();
+
+	return 0;
+}
+
+
+void KeybooardLayerRoutine(std::stop_token stopToken) {
+	auto keyCodeMapper = std::make_shared<InterceptionKeyCodeMapper>();
+	// TODO: сделай так чтоб тильда всегда писалась без SHIFT
 	auto remapKeys = std::map<LogicalKey, LogicalKey>{
+
 		//{ LogicalKey::T, LogicalKey::Digit6 },
 		//{ LogicalKey::U, LogicalKey::Digit7 },
 	};
@@ -44,7 +82,5 @@ int main() {
 		std::move(blocker),
 		std::move(remapper)
 	);
-	engine.Run();
-
-	return 0;
+	engine.Run(stopToken);
 }
