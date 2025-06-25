@@ -1,5 +1,5 @@
 #pragma once
-#include <Helpers/HWindows.h>
+#include <Windows.h>
 
 namespace Keyboard::Platform {
 	namespace Enums {

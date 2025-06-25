@@ -1,17 +1,16 @@
-#include <Helpers/Logger.h>
 #include <Helpers/Win32/TrayWindow.h>
+#include <Helpers/Logger.h>
+
+#include "Interception/Actions/SimpleBlockAction.h"
+#include "Interception/Actions/SimpleRemapAction.h"
+#include "Interception/Actions/Win32SendAction.h"
+#include "Interception/Rules/SimpleKeyRule.h"
 
 #include "Keyboard/Core/LogicalKeyGroup.h"
-
-#include "Interception/InterceptionKeyCodeMapper.h"
-#include "Interception/SimpleKeyRemapper.h"
-#include "Interception/SimpleKeyBlocker.h"
-
 #include "KeyboardLayerEngine.h"
 
 #include <shellapi.h>
 #include <windows.h>
-
 #pragma comment (lib, "interception.lib")
 
 
@@ -45,34 +44,45 @@ int WINAPI WinMain(
 }
 
 
+
+
 void KeybooardLayerRoutine(std::stop_token stopToken) {
-	auto keyCodeMapper = std::make_shared<Interception::InterceptionKeyCodeMapper>();
-	
-	auto remapKeys = std::map<Keyboard::Core::Enums::LogicalKey, Keyboard::Core::Enums::LogicalKey>{
-	};
-	auto remapper = std::make_unique<Interception::SimpleKeyRemapper>(
-		L"ACPI\\VEN_ATK", // TODO: replace with TECLAST keyboard
-		remapKeys
-	);
+	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
 
-	auto blockingKeys =
-		Keyboard::Core::LogicalKeyGroup::Arrows() |
-		Keyboard::Core::LogicalKeyGroup::Digits() |
-		Keyboard::Core::LogicalKeyGroup::Numpad() |
-		Keyboard::Core::LogicalKeyGroup::Letters() |
-		Keyboard::Core::LogicalKeyGroup::Modifiers() |
-		Keyboard::Core::LogicalKeyGroup::ControlKeys() |
-		Keyboard::Core::LogicalKeyGroup::FunctionKeys();
+	{
+		auto trackingKeysGroup =
+			Keyboard::Core::LogicalKeyGroup::Arrows() |
+			Keyboard::Core::LogicalKeyGroup::Digits() |
+			Keyboard::Core::LogicalKeyGroup::Numpad() |
+			Keyboard::Core::LogicalKeyGroup::Letters() |
+			Keyboard::Core::LogicalKeyGroup::Modifiers() |
+			Keyboard::Core::LogicalKeyGroup::ControlKeys() |
+			Keyboard::Core::LogicalKeyGroup::FunctionKeys();
 
-	auto blocker = std::make_unique<Interception::SimpleKeyBlocker>(
-		L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
-		blockingKeys.GetKeys()
-	);
+		auto rule = std::make_shared<Interception::Rules::SimpleKeyRule>(
+			L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
+			trackingKeysGroup.GetKeys()
+		);
+
+		auto action = std::make_shared<Interception::Actions::SimpleBlockAction>();
+
+		keyProcessors.push_back(std::make_shared<Interception::KeyProcessor>(rule, action));
+	}
+
+	{
+		auto trackingKeysGroup = Keyboard::Core::LogicalKeyGroup::Letters();
+
+		auto rule = std::make_shared<Interception::Rules::SimpleKeyRule>(
+			L"any",
+			trackingKeysGroup.GetKeys()
+		);
+
+		auto action = std::make_shared<Interception::Actions::ExtendFunctionalityAction>();
+
+		keyProcessors.push_back(std::make_shared<Interception::KeyProcessor>(rule, action));
+	}
 
 
-	auto engine = KeyboardLayerEngine(
-		std::move(blocker),
-		std::move(remapper)
-	);
+	auto engine = KeyboardLayerEngine(std::move(keyProcessors));
 	engine.Run(stopToken);
 }

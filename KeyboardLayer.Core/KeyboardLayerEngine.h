@@ -1,17 +1,16 @@
 #pragma once
 #include <3rdParty/Interception/interception.h>
-#include "Interception/DeviceInfo.h"
-#include "Interception/IKeyBlocker.h"
-#include "Interception/IKeyRemapper.h"
-#include <memory>
-#include <thread>
 
+#include "Interception/KeyProcessor.h"
+#include "Interception/DeviceInfo.h"
+
+#include <memory>
+#include <vector>
+#include <thread>
 
 class KeyboardLayerEngine {
 public:
-	KeyboardLayerEngine(
-		std::unique_ptr<Interception::IKeyBlocker> keyBlocker,
-		std::unique_ptr<Interception::IKeyRemapper> keyRemapper);
+	KeyboardLayerEngine(std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors);
 
 	void Run(std::stop_token stopToken);
 
@@ -19,10 +18,10 @@ private:
 	std::wstring GetHardwareId(int device);
 	Interception::DeviceInfo GetDeviceInfo(int device);
 
+	bool ApplyKeyProcessors(Interception::DeviceInfo, InterceptionKeyStroke& keyStrokeRef);
+
 private:
-	std::unique_ptr<Interception::IKeyBlocker> keyBlocker;
-	std::unique_ptr<Interception::IKeyRemapper> keyRemapper;
-	//std::unique_ptr<Interception::IKeyInjector> keyInjector;
+	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
 
 	InterceptionContext context;
 };
