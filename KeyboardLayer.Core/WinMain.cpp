@@ -1,12 +1,13 @@
-#include <Helpers/Win32/MainWindow.h>
-#include <Helpers/Win32/TrayWindow.h>
 #include <Helpers/Logger.h>
+#include <Helpers/Win32/TrayWindow.h>
+
+#include "Keyboard/Core/LogicalKeyGroup.h"
+
+#include "Interception/InterceptionKeyCodeMapper.h"
+#include "Interception/SimpleKeyRemapper.h"
+#include "Interception/SimpleKeyBlocker.h"
 
 #include "KeyboardLayerEngine.h"
-#include "InterceptionKeyCodeMapper.h"
-#include "SimpleKeyRemapper.h"
-#include "SimpleKeyBlocker.h"
-#include "LogicalKeyGroup.h"
 
 #include <shellapi.h>
 #include <windows.h>
@@ -15,6 +16,7 @@
 
 
 void KeybooardLayerRoutine(std::stop_token stopToken);
+
 
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -44,37 +46,27 @@ int WINAPI WinMain(
 
 
 void KeybooardLayerRoutine(std::stop_token stopToken) {
-	auto keyCodeMapper = std::make_shared<InterceptionKeyCodeMapper>();
-	// TODO: сделай так чтоб тильда всегда писалась без SHIFT
-	auto remapKeys = std::map<LogicalKey, LogicalKey>{
-
-		//{ LogicalKey::T, LogicalKey::Digit6 },
-		//{ LogicalKey::U, LogicalKey::Digit7 },
+	auto keyCodeMapper = std::make_shared<Interception::InterceptionKeyCodeMapper>();
+	
+	auto remapKeys = std::map<Keyboard::Core::Enums::LogicalKey, Keyboard::Core::Enums::LogicalKey>{
 	};
-	auto remapper = std::make_unique<SimpleKeyRemapper>(
-		remapKeys,
-		keyCodeMapper
+	auto remapper = std::make_unique<Interception::SimpleKeyRemapper>(
+		L"ACPI\\VEN_ATK", // TODO: replace with TECLAST keyboard
+		remapKeys
 	);
 
-
-	//auto blockingKeys = std::set<LogicalKey>{
-	//	LogicalKey::W,
-	//	LogicalKey::T,
-	//	LogicalKey::Space,
-	//};
 	auto blockingKeys =
-		LogicalKeyGroup::Arrows() |
-		LogicalKeyGroup::Digits() |
-		LogicalKeyGroup::Numpad() |
-		LogicalKeyGroup::Letters() |
-		LogicalKeyGroup::Modifiers() |
-		LogicalKeyGroup::ControlKeys() |
-		LogicalKeyGroup::FunctionKeys();
+		Keyboard::Core::LogicalKeyGroup::Arrows() |
+		Keyboard::Core::LogicalKeyGroup::Digits() |
+		Keyboard::Core::LogicalKeyGroup::Numpad() |
+		Keyboard::Core::LogicalKeyGroup::Letters() |
+		Keyboard::Core::LogicalKeyGroup::Modifiers() |
+		Keyboard::Core::LogicalKeyGroup::ControlKeys() |
+		Keyboard::Core::LogicalKeyGroup::FunctionKeys();
 
-	auto blocker = std::make_unique<SimpleKeyBlocker>(
+	auto blocker = std::make_unique<Interception::SimpleKeyBlocker>(
 		L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
-		blockingKeys.GetKeys(),
-		keyCodeMapper
+		blockingKeys.GetKeys()
 	);
 
 
