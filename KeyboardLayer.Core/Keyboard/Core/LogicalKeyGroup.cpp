@@ -19,6 +19,10 @@ namespace Keyboard::Core {
 		return this->keys.contains(key);
 	}
 
+	LogicalKeyGroup::operator std::set<Enums::LogicalKey>() const {
+		return this->keys;
+	}
+
 	LogicalKeyGroup LogicalKeyGroup::Arrows() {
 		return {
 			Enums::LogicalKey::ArrowUp, Enums::LogicalKey::ArrowDown, Enums::LogicalKey::ArrowLeft, Enums::LogicalKey::ArrowRight,

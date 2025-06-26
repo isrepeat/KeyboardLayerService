@@ -15,10 +15,10 @@ namespace Interception::Actions {
 			, interceptionKeyCodeMapper{} 
 		{}
 
-		Result Apply(InterceptionKeyStroke& keyStroke) const override {
+		Enums::ActionResult Apply(InterceptionKeyStroke& keyStroke) const override {
 			auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
 			if (!logicalKey || !this->keyRemapTable.contains(*logicalKey)) {
-				return Result::NotHandled;
+				return Enums::ActionResult::NotHandled;
 			}
 
 			auto to = this->keyRemapTable.at(*logicalKey);
@@ -26,7 +26,7 @@ namespace Interception::Actions {
 			if (nativeKey) {
 				keyStroke.code = *nativeKey;
 			}
-			return Result::NotHandled;
+			return Enums::ActionResult::NotHandled;
 
 			//	// ВАЖНО:
 			//	// Если ты подменяешь клавишу, обязательно обрабатывай и нажатие (key down), и отпускание (key up).

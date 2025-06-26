@@ -67,7 +67,7 @@
     <ClInclude Include="Interception\SimpleDeviceFilter.h">
       <Filter>Source Files\Interception</Filter>
     </ClInclude>
-    <ClInclude Include="Interception\Actions\Win32SendAction.h">
+    <ClInclude Include="Interception\Actions\Win32KeySymbolReplaceAction.h">
       <Filter>Source Files\Interception\Actions</Filter>
     </ClInclude>
     <ClInclude Include="Interception\Actions\SimpleBlockAction.h">
@@ -79,10 +79,13 @@
     <ClInclude Include="Interception\Rules\IKeyRule.h">
       <Filter>Source Files\Interception\Rules</Filter>
     </ClInclude>
-    <ClInclude Include="Interception\Rules\SimpleKeyRule.h">
+    <ClInclude Include="Interception\Rules\TrackDevicesAndKeysRule.h">
       <Filter>Source Files\Interception\Rules</Filter>
     </ClInclude>
     <ClInclude Include="Interception\Actions\IKeyAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\ExtendCapsLockFunctionalityAction.h">
       <Filter>Source Files\Interception\Actions</Filter>
     </ClInclude>
   </ItemGroup>

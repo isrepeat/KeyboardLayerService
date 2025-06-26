@@ -1,10 +1,11 @@
 #include <Helpers/Win32/TrayWindow.h>
 #include <Helpers/Logger.h>
 
+#include "Interception/Actions/ExtendCapsLockFunctionalityAction.h"
+#include "Interception/Actions/Win32KeySymbolReplaceAction.h"
 #include "Interception/Actions/SimpleBlockAction.h"
 #include "Interception/Actions/SimpleRemapAction.h"
-#include "Interception/Actions/Win32SendAction.h"
-#include "Interception/Rules/SimpleKeyRule.h"
+#include "Interception/Rules/TrackDevicesAndKeysRule.h"
 
 #include "Keyboard/Core/LogicalKeyGroup.h"
 #include "KeyboardLayerEngine.h"
@@ -44,44 +45,91 @@ int WINAPI WinMain(
 }
 
 
+class KeyProcessorProvider {
+public:
+	static std::shared_ptr<Interception::KeyProcessor> GetFunctionKeysBlockingProcessor(
+		std::wstring deviceIdMatch,
+		std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys,
+		Interception::KeyProcessor::ChainPolicy chainPolicy
+	) {
+		auto rule = std::make_shared<Interception::Rules::TrackDevicesAndKeysRule>(
+			deviceIdMatch,
+			trackingKeys
+		);
+
+		auto action = std::make_shared<Interception::Actions::SimpleBlockAction>();
+
+		return std::make_shared<Interception::KeyProcessor>(rule, action, chainPolicy);
+	}
+
+
+	static std::shared_ptr<Interception::KeyProcessor> GetExtendingCapsLockFunctionalityProcessor(
+		std::wstring deviceIdMatch,
+		std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys,
+		Interception::KeyProcessor::ChainPolicy chainPolicy
+	) {
+		auto rule = std::make_shared<Interception::Rules::TrackDevicesAndKeysRule>(
+			deviceIdMatch,
+			trackingKeys
+		);
+
+		auto action = std::make_shared<Interception::Actions::ExtendCapsLockFunctionalityAction>();
+		
+		return std::make_shared<Interception::KeyProcessor>(rule, action, chainPolicy);
+	}
+
+
+	static std::shared_ptr<Interception::KeyProcessor> GeReplacingKeyWithSymbolProcessor(
+		std::wstring deviceIdMatch,
+		Keyboard::Core::Enums::LogicalKey trackingKey,
+		wchar_t replacedSymbol,
+		Interception::KeyProcessor::ChainPolicy chainPolicy
+	) {
+		auto rule = std::make_shared<Interception::Rules::TrackDevicesAndKeyRule>(
+			deviceIdMatch,
+			trackingKey
+		);
+
+		auto action = std::make_shared<Interception::Actions::Win32KeySymbolReplaceAction>(replacedSymbol);
+
+		return std::make_shared<Interception::KeyProcessor>(rule, action, chainPolicy);
+	}
+};
 
 
 void KeybooardLayerRoutine(std::stop_token stopToken) {
 	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
 
-	{
-		auto trackingKeysGroup =
-			Keyboard::Core::LogicalKeyGroup::Arrows() |
-			Keyboard::Core::LogicalKeyGroup::Digits() |
-			Keyboard::Core::LogicalKeyGroup::Numpad() |
-			Keyboard::Core::LogicalKeyGroup::Letters() |
-			Keyboard::Core::LogicalKeyGroup::Modifiers() |
-			Keyboard::Core::LogicalKeyGroup::ControlKeys() |
-			Keyboard::Core::LogicalKeyGroup::FunctionKeys();
+	keyProcessors.push_back(KeyProcessorProvider::GetFunctionKeysBlockingProcessor( // TODO: must be applied for TECLAST.
+		L"any",
+		Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+		Interception::KeyProcessor::ChainPolicy::AlwaysContinue
+	));
 
-		auto rule = std::make_shared<Interception::Rules::SimpleKeyRule>(
-			L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
-			trackingKeysGroup.GetKeys()
-		);
+	keyProcessors.push_back(KeyProcessorProvider::GetFunctionKeysBlockingProcessor(
+		L"ACPI\\VEN_ATK", // Asus Vivobook pro 16 (N7600PC) keyboard
+		Keyboard::Core::LogicalKeyGroup::Arrows() |
+		Keyboard::Core::LogicalKeyGroup::Digits() |
+		Keyboard::Core::LogicalKeyGroup::Numpad() |
+		Keyboard::Core::LogicalKeyGroup::Letters() |
+		Keyboard::Core::LogicalKeyGroup::Modifiers() |
+		Keyboard::Core::LogicalKeyGroup::ControlKeys() |
+		Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+		Interception::KeyProcessor::ChainPolicy::AlwaysContinue
+	));
 
-		auto action = std::make_shared<Interception::Actions::SimpleBlockAction>();
+	keyProcessors.push_back(KeyProcessorProvider::GetExtendingCapsLockFunctionalityProcessor( // TODO: must be applied for TECLAST.
+		L"any",
+		Keyboard::Core::LogicalKeyGroup::Letters(),
+		Interception::KeyProcessor::ChainPolicy::StopOnHandled
+	));
 
-		keyProcessors.push_back(std::make_shared<Interception::KeyProcessor>(rule, action));
-	}
-
-	{
-		auto trackingKeysGroup = Keyboard::Core::LogicalKeyGroup::Letters();
-
-		auto rule = std::make_shared<Interception::Rules::SimpleKeyRule>(
-			L"any",
-			trackingKeysGroup.GetKeys()
-		);
-
-		auto action = std::make_shared<Interception::Actions::ExtendFunctionalityAction>();
-
-		keyProcessors.push_back(std::make_shared<Interception::KeyProcessor>(rule, action));
-	}
-
+	keyProcessors.push_back(KeyProcessorProvider::GeReplacingKeyWithSymbolProcessor( // TODO: must be applied for TECLAST.
+		L"any",
+		Keyboard::Core::Enums::LogicalKey::Tilde,
+		L'x',
+		Interception::KeyProcessor::ChainPolicy::AlwaysContinue
+	));
 
 	auto engine = KeyboardLayerEngine(std::move(keyProcessors));
 	engine.Run(stopToken);

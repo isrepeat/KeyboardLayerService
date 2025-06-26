@@ -12,6 +12,8 @@ namespace Keyboard::Core {
 		const std::set<Enums::LogicalKey>& GetKeys() const;
 		bool Contains(Enums::LogicalKey key) const;
 
+		operator std::set<Enums::LogicalKey>() const;
+
 		static LogicalKeyGroup Arrows();
 		static LogicalKeyGroup Digits();
 		static LogicalKeyGroup Numpad();

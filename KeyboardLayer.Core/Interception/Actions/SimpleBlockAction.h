@@ -5,11 +5,11 @@
 namespace Interception::Actions {
 	class SimpleBlockAction : public IKeyAction {
 	public:
-		Result Apply(InterceptionKeyStroke& keyStroke) const override {
+		Enums::ActionResult Apply(InterceptionKeyStroke& keyStroke) const override {
 			LOG_DEBUG_D("[Blocked] Key code: {}"
 				, keyStroke.code
 			);
-			return Result::Handled;
+			return Enums::ActionResult::Handled;
 		}
 	};
 }

@@ -6,5 +6,8 @@ namespace Keyboard::Platform {
 	public:
 		void PressKey(WORD vk);
 		void ReleaseKey(WORD vk);
+
+		void SendUnicodeCharKeyDown(wchar_t ch);
+		void SendUnicodeCharKeyUp(wchar_t ch);
 	};
 }

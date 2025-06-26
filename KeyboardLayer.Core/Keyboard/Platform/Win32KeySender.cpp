@@ -15,15 +15,24 @@ namespace Keyboard::Platform {
 		input.ki.dwFlags = KEYEVENTF_KEYUP;
 		SendInput(1, &input, sizeof(INPUT));
 	}
-}
 
-//void KeyInjector::TapVirtualKey(WORD vk) {
-//	this->PressKey(vk);
-//	this->ReleaseKey(vk);
-//}
-//
-//void KeyInjector::TapVirtualKeyWithShift(WORD vk) {
-//	this->PressKey(VK_SHIFT);
-//	this->TapVirtualKey(vk);
-//	this->ReleaseKey(VK_SHIFT);
-//}
+	void Win32KeySender::SendUnicodeCharKeyDown(wchar_t ch) {
+		INPUT input{};
+		input.type = INPUT_KEYBOARD;
+		input.ki.wVk = 0;
+		input.ki.wScan = ch;
+		input.ki.dwFlags = KEYEVENTF_UNICODE;
+
+		SendInput(1, &input, sizeof(INPUT));
+	}
+
+	void Win32KeySender::SendUnicodeCharKeyUp(wchar_t ch) {
+		INPUT input{};
+		input.type = INPUT_KEYBOARD;
+		input.ki.wVk = 0;
+		input.ki.wScan = ch;
+		input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+
+		SendInput(1, &input, sizeof(INPUT));
+	}
+}

@@ -49,32 +49,37 @@ void KeyboardLayerEngine::Run(std::stop_token stopToken) {
 	interception_destroy_context(this->context);
 }
 
+
 std::wstring KeyboardLayerEngine::GetHardwareId(int device) {
 	wchar_t id[512]{};
 	interception_get_hardware_id(this->context, device, id, sizeof(id));
 	return std::wstring(id);
 }
 
+
 Interception::DeviceInfo KeyboardLayerEngine::GetDeviceInfo(int device) {
 	return Interception::DeviceInfo{ device, this->GetHardwareId(device) };
 }
+
 
 bool KeyboardLayerEngine::ApplyKeyProcessors(Interception::DeviceInfo deviceInfo, InterceptionKeyStroke& keyStrokeRef) {
 	bool isAnyActionWasApplied = false;
 
 	for (const auto& processor : this->keyProcessors) {
-		auto processorResult = processor->Process(deviceInfo, keyStrokeRef);
+		auto actionResult = processor->Process(deviceInfo, keyStrokeRef);
+		auto processorChainPolicy = processor->GetChainPolicy();
 
-		switch (processorResult) {
-		case Interception::Actions::IKeyAction::Result::NotHandled:
+		switch (actionResult) {
+		case Enums::ActionResult::NotHandled:
 			break;
 
-		case Interception::Actions::IKeyAction::Result::Handled:
-			return true; // действие было применено и оно блокирует дальнейшую обработку
-
-		case Interception::Actions::IKeyAction::Result::HandledPassThrough:
-			isAnyActionWasApplied = true;
-			break;
+		case Enums::ActionResult::Handled:
+			if (processorChainPolicy == Interception::KeyProcessor::ChainPolicy::StopOnHandled) {
+				return true; // действие было применено и оно блокирует дальнейшую обработку
+			}
+			else if (processorChainPolicy == Interception::KeyProcessor::ChainPolicy::AlwaysContinue) {
+				isAnyActionWasApplied = true;
+			}
 		}
 	}
 

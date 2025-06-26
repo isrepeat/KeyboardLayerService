@@ -12,9 +12,9 @@
 #include <set>
 
 namespace Interception::Rules {
-	class SimpleKeyRule : public IKeyRule {
+	class TrackDevicesAndKeysRule : public IKeyRule {
 	public:
-		SimpleKeyRule(
+		TrackDevicesAndKeysRule(
 			std::wstring deviceIdMatch,
 			std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys)
 			: deviceFilter{ std::make_shared<SimpleDeviceFilter>(std::move(deviceIdMatch)) }
@@ -38,28 +38,27 @@ namespace Interception::Rules {
 
 
 
-	//class CapsLockKeyRule : public IKeyRule {
-	//public:
-	//	CapsLockKeyRule(std::wstring deviceIdMatch)
-	//		: deviceFilter{ std::make_shared<SimpleDeviceFilter>(std::move(deviceIdMatch)) }
-	//		, interceptionKeyCodeMapper{} 
-	//	{
-	//		//auto _trackingKeys = Keyboard::Core::LogicalKeyGroup::Letters().GetKeys();
+	class TrackDevicesAndKeyRule : public IKeyRule {
+	public:
+		TrackDevicesAndKeyRule(
+			std::wstring deviceIdMatch,
+			Keyboard::Core::Enums::LogicalKey trackingKey)
+			: deviceFilter{ std::make_shared<SimpleDeviceFilter>(std::move(deviceIdMatch)) }
+			, trackingKey{ trackingKey }
+			, interceptionKeyCodeMapper{} {
+		}
 
-	//		this->trackingKeys = Keyboard::Core::LogicalKeyGroup::Letters().GetKeys();
-	//	}
+		bool IsMatch(const DeviceInfo& device, const InterceptionKeyStroke& keyStroke) const override {
+			if (!this->deviceFilter->Accept(device)) {
+				return false;
+			}
+			auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
+			return logicalKey && this->trackingKey == logicalKey;
+		}
 
-	//	bool IsMatch(const DeviceInfo& device, const InterceptionKeyStroke& keyStroke) const override {
-	//		if (!this->deviceFilter->Accept(device)) {
-	//			return false;
-	//		}
-	//		auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
-	//		return logicalKey && this->trackingKeys.contains(*logicalKey);
-	//	}
-
-	//private:
-	//	std::shared_ptr<IDeviceFilter> deviceFilter;
-	//	InterceptionKeyCodeMapper interceptionKeyCodeMapper;
-	//	std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys;
-	//};
+	private:
+		std::shared_ptr<IDeviceFilter> deviceFilter;
+		Keyboard::Core::Enums::LogicalKey trackingKey;
+		InterceptionKeyCodeMapper interceptionKeyCodeMapper;
+	};
 }
