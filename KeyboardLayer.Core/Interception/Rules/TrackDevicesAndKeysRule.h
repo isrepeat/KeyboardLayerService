@@ -1,12 +1,15 @@
 #pragma once
-#include "Interception/InterceptionKeyCodeMapper.h"
-#include "Interception/SimpleDeviceFilter.h"
-#include "Interception/IDeviceFilter.h"
+#include <Helpers/Ranges.h>
 
+#include "Interception/InterceptionKeyCodeMapper.h"
+
+#include "Keyboard/Platform/KeyboardEnumerator.h"
+#include "Keyboard/Platform/KeyboardDeviceInfo.h"
 #include "Keyboard/Core/LogicalKeyGroup.h"
 #include "Keyboard/Core/IKeyCodeMapper.h"
 #include "IKeyRule.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <set>
@@ -15,23 +18,24 @@ namespace Interception::Rules {
 	class TrackDevicesAndKeysRule : public IKeyRule {
 	public:
 		TrackDevicesAndKeysRule(
-			std::wstring deviceIdMatch,
+			Keyboard::Platform::KeyboardDeviceInfoList trackingDevices,
 			std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys)
-			: deviceFilter{ std::make_shared<SimpleDeviceFilter>(std::move(deviceIdMatch)) }
+			: trackingDevices{ std::move(trackingDevices) }
 			, trackingKeys{ std::move(trackingKeys) }
 			, interceptionKeyCodeMapper{} {
 		}
 
 		bool IsMatch(const DeviceInfo& device, const InterceptionKeyStroke& keyStroke) const override {
-			if (!this->deviceFilter->Accept(device)) {
+			if (!this->trackingDevices.contains(device.keyboardDeviceInfo)) {
 				return false;
 			}
+
 			auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
 			return logicalKey && this->trackingKeys.contains(*logicalKey);
 		}
 
 	private:
-		std::shared_ptr<IDeviceFilter> deviceFilter;
+		Keyboard::Platform::KeyboardDeviceInfoList trackingDevices;
 		std::set<Keyboard::Core::Enums::LogicalKey> trackingKeys;
 		InterceptionKeyCodeMapper interceptionKeyCodeMapper;
 	};
@@ -41,23 +45,24 @@ namespace Interception::Rules {
 	class TrackDevicesAndKeyRule : public IKeyRule {
 	public:
 		TrackDevicesAndKeyRule(
-			std::wstring deviceIdMatch,
+			Keyboard::Platform::KeyboardDeviceInfoList trackingDevices,
 			Keyboard::Core::Enums::LogicalKey trackingKey)
-			: deviceFilter{ std::make_shared<SimpleDeviceFilter>(std::move(deviceIdMatch)) }
+			: trackingDevices{ std::move(trackingDevices) }
 			, trackingKey{ trackingKey }
 			, interceptionKeyCodeMapper{} {
 		}
 
 		bool IsMatch(const DeviceInfo& device, const InterceptionKeyStroke& keyStroke) const override {
-			if (!this->deviceFilter->Accept(device)) {
+			if (!this->trackingDevices.contains(device.keyboardDeviceInfo)) {
 				return false;
 			}
+
 			auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
 			return logicalKey && this->trackingKey == logicalKey;
 		}
 
 	private:
-		std::shared_ptr<IDeviceFilter> deviceFilter;
+		Keyboard::Platform::KeyboardDeviceInfoList trackingDevices;
 		Keyboard::Core::Enums::LogicalKey trackingKey;
 		InterceptionKeyCodeMapper interceptionKeyCodeMapper;
 	};

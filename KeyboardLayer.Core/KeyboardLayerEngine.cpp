@@ -2,6 +2,8 @@
 #include <Helpers/Logger.h>
 
 #include "Interception/InterceptionKeyCodeMapper.h"
+#include "Keyboard/Platform/KeyboardEnumerator.h"
+#include "Keyboard/Platform/KeyboardParser.h"
 #include "Keyboard/Core/LogicalKey.h"
 
 #include <iostream>
@@ -33,9 +35,13 @@ void KeyboardLayerEngine::Run(std::stop_token stopToken) {
 		}
 
 		InterceptionKeyStroke& keyStroke = (InterceptionKeyStroke&)stroke;
-		LOG_DEBUG_D("Key code: {}", keyStroke.code);
-
 		auto deviceInfo = this->GetDeviceInfo(device);
+
+		LOG_DEBUG_D(L"Key code: {} [device = {}]"
+			, keyStroke.code
+			, deviceInfo.keyboardDeviceInfo ? deviceInfo.keyboardDeviceInfo->hardwareId : L"unknown"
+		);
+
 
 		bool isAnyProcessorWasApplied = this->ApplyKeyProcessors(deviceInfo, keyStroke);
 		if (isAnyProcessorWasApplied) {
@@ -50,15 +56,55 @@ void KeyboardLayerEngine::Run(std::stop_token stopToken) {
 }
 
 
-std::wstring KeyboardLayerEngine::GetHardwareId(int device) {
-	wchar_t id[512]{};
-	interception_get_hardware_id(this->context, device, id, sizeof(id));
-	return std::wstring(id);
+Interception::DeviceInfo KeyboardLayerEngine::GetDeviceInfo(InterceptionDevice device) {
+	std::wstring hardwareId = this->GetHardwareId(device);
+
+	// Сначала ищем в кеше по исходному hardwareId
+	auto it = this->cachedDeviceInfos.find(hardwareId);
+	if (it != this->cachedDeviceInfos.end()) {
+		return it->second;
+	}
+
+	// Преобразуем в upper-case только для поиска в KeyboardEnumerator
+	std::wstring hardwareIdUpper = hardwareId;
+	std::transform(hardwareIdUpper.begin(), hardwareIdUpper.end(), hardwareIdUpper.begin(), ::towupper);
+
+	
+	// Here hardwareIdUpper == ACPI\VEN_ATK&DEV_3001
+	// but keyboardDevice.hardwareId = ACPI\\ATK3001
+	Keyboard::Platform::KeyboardDeviceInfo keyboardDeviceInfo;
+	keyboardDeviceInfo.instanceId = hardwareIdUpper;
+
+	std::shared_ptr<Keyboard::Platform::KeyboardDeviceInfo> currentKeyboardDevice;
+
+	if (auto acpiKeyboardDeviceInfo = Keyboard::Platform::KeyboardParser::TryParseAcpiKeyboard(keyboardDeviceInfo)) {
+		currentKeyboardDevice = std::static_pointer_cast<Keyboard::Platform::KeyboardDeviceInfo>(
+			std::make_shared<Keyboard::Platform::AcpiKeyboardInfo>(*acpiKeyboardDeviceInfo)
+		);
+	}
+	else if (auto hidKeyboardDeviceInfo = Keyboard::Platform::KeyboardParser::TryParseHidKeyboard(keyboardDeviceInfo)) {
+		currentKeyboardDevice = std::static_pointer_cast<Keyboard::Platform::KeyboardDeviceInfo>(
+			std::make_shared<Keyboard::Platform::HidKeyboardInfo>(*hidKeyboardDeviceInfo)
+		);
+	}
+
+	Interception::DeviceInfo deviceInfo;
+	deviceInfo.interceptionDevice = device;
+
+	auto allKeyboardDevices = Keyboard::Platform::KeyboardEnumerator::GetInstance().GetAllKeyboardDevices();
+	if (allKeyboardDevices.contains(currentKeyboardDevice)) {
+		deviceInfo.keyboardDeviceInfo = currentKeyboardDevice;
+	}
+
+	this->cachedDeviceInfos[hardwareId] = deviceInfo;
+	return deviceInfo;
 }
 
 
-Interception::DeviceInfo KeyboardLayerEngine::GetDeviceInfo(int device) {
-	return Interception::DeviceInfo{ device, this->GetHardwareId(device) };
+std::wstring KeyboardLayerEngine::GetHardwareId(InterceptionDevice device) {
+	wchar_t id[512]{};
+	interception_get_hardware_id(this->context, device, id, sizeof(id));
+	return std::wstring(id);
 }
 
 

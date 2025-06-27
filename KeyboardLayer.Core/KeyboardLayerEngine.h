@@ -15,13 +15,14 @@ public:
 	void Run(std::stop_token stopToken);
 
 private:
-	std::wstring GetHardwareId(int device);
-	Interception::DeviceInfo GetDeviceInfo(int device);
+	Interception::DeviceInfo GetDeviceInfo(InterceptionDevice device);
+	std::wstring GetHardwareId(InterceptionDevice device);
 
 	bool ApplyKeyProcessors(Interception::DeviceInfo, InterceptionKeyStroke& keyStrokeRef);
 
 private:
 	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
-
 	InterceptionContext context;
+
+	std::unordered_map<std::wstring, Interception::DeviceInfo> cachedDeviceInfos;
 };
