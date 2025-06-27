@@ -166,17 +166,18 @@
     <ClInclude Include="Interception\Actions\SimpleBlockAction.h" />
     <ClInclude Include="Interception\Actions\SimpleRemapAction.h" />
     <ClInclude Include="Interception\DeviceInfo.h" />
-    <ClInclude Include="Interception\IDeviceFilter.h" />
     <ClInclude Include="Interception\InterceptionKeyCode.h" />
     <ClInclude Include="Interception\InterceptionKeyCodeMapper.h" />
     <ClInclude Include="Interception\KeyProcessor.h" />
     <ClInclude Include="Interception\Rules\IKeyRule.h" />
     <ClInclude Include="Interception\Rules\TrackDevicesAndKeysRule.h" />
-    <ClInclude Include="Interception\SimpleDeviceFilter.h" />
     <ClInclude Include="KeyboardLayerEngine.h" />
     <ClInclude Include="Keyboard\Core\IKeyCodeMapper.h" />
     <ClInclude Include="Keyboard\Core\LogicalKey.h" />
     <ClInclude Include="Keyboard\Core\LogicalKeyGroup.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardDeviceInfo.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardEnumerator.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardParser.h" />
     <ClInclude Include="Keyboard\Platform\Win32KeySender.h" />
     <ClInclude Include="Keyboard\Platform\WindowsKeyCode.h" />
     <ClInclude Include="Keyboard\Platform\ModifierState.h" />
@@ -185,9 +186,10 @@
   <ItemGroup>
     <ClCompile Include="Interception\InterceptionKeyCodeMapper.cpp" />
     <ClCompile Include="Interception\KeyProcessor.cpp" />
-    <ClCompile Include="Interception\SimpleDeviceFilter.cpp" />
     <ClCompile Include="KeyboardLayerEngine.cpp" />
     <ClCompile Include="Keyboard\Core\LogicalKeyGroup.cpp" />
+    <ClCompile Include="Keyboard\Platform\KeyboardEnumerator.cpp" />
+    <ClCompile Include="Keyboard\Platform\KeyboardParser.cpp" />
     <ClCompile Include="Keyboard\Platform\ModifierState.cpp" />
     <ClCompile Include="Keyboard\Platform\Win32KeySender.cpp" />
     <ClCompile Include="Keyboard\Platform\WindowsKeyCodeMapper.cpp" />

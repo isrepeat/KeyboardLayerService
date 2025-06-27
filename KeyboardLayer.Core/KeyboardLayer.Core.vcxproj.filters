@@ -58,13 +58,7 @@
     <ClInclude Include="Keyboard\Platform\Win32KeySender.h">
       <Filter>Source Files\Keyboard\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="Interception\IDeviceFilter.h">
-      <Filter>Source Files\Interception</Filter>
-    </ClInclude>
     <ClInclude Include="Interception\KeyProcessor.h">
-      <Filter>Source Files\Interception</Filter>
-    </ClInclude>
-    <ClInclude Include="Interception\SimpleDeviceFilter.h">
       <Filter>Source Files\Interception</Filter>
     </ClInclude>
     <ClInclude Include="Interception\Actions\Win32KeySymbolReplaceAction.h">
@@ -87,6 +81,15 @@
     </ClInclude>
     <ClInclude Include="Interception\Actions\ExtendCapsLockFunctionalityAction.h">
       <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardParser.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardDeviceInfo.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardEnumerator.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -114,8 +117,11 @@
     <ClCompile Include="Interception\KeyProcessor.cpp">
       <Filter>Source Files\Interception</Filter>
     </ClCompile>
-    <ClCompile Include="Interception\SimpleDeviceFilter.cpp">
-      <Filter>Source Files\Interception</Filter>
+    <ClCompile Include="Keyboard\Platform\KeyboardParser.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\KeyboardEnumerator.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
