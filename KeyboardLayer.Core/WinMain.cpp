@@ -2,6 +2,7 @@
 // Before use this program you need install: https://github.com/oblitum/Interception
 //
 #include <Helpers/Win32/TrayWindow.h>
+#include <Helpers/RegistryManager.h>
 #include <Helpers/Logger.h>
 
 #include "Interception/Actions/ExtendCapsLockFunctionalityAction.h"
@@ -20,6 +21,10 @@
 
 #pragma comment (lib, "interception.lib")
 
+
+namespace g {
+	const std::wstring appName = L"KeyboardLayerService Tray App";
+}
 
 class KeyProcessorProvider {
 public:
@@ -131,17 +136,39 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 
 
 
+void AddToStartup() {
+	const std::wstring regPath = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+	const std::wstring launchCommandLine = std::format(L"\"{}\"", H::ExeFullname().wstring());
+
+	bool hasRegEntry = H::RegistryManager::HasRegValue(
+		H::HKey::CurrentUser,
+		regPath,
+		g::appName
+	);
+	if (!hasRegEntry) {
+		H::RegistryManager::SetRegValue(
+			H::HKey::CurrentUser,
+			regPath,
+			g::appName,
+			launchCommandLine
+		);
+	}
+}
+
+
 int WINAPI WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR     lpCmdLine,
 	int       nCmdShow
 ) {
+	::AddToStartup();
+
 	std::jthread workRoutineThread(::KeybooardLayerRoutine);
 
 	try {
 		HICON trayIcon = ::LoadIconW(nullptr, IDI_APPLICATION); // системная иконка
-		auto trayWindow = H::Win32::TrayWindow{ hInstance, trayIcon, L"KeyboardLayerService Tray App" };
+		auto trayWindow = H::Win32::TrayWindow{ hInstance, trayIcon, g::appName };
 
 		Keyboard::Platform::KeyboardEnumerator::GetInstance().SetDevicesChangedCallback([](const Keyboard::Platform::KeyboardDeviceInfoList& devices) {
 			LOG_DEBUG_D(L"DeviceList changed:");
