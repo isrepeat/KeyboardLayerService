@@ -1,3 +1,6 @@
+//
+// Before use this program you need install: https://github.com/oblitum/Interception
+//
 #include <Helpers/Win32/TrayWindow.h>
 #include <Helpers/Logger.h>
 
@@ -16,55 +19,6 @@
 #include <windows.h>
 
 #pragma comment (lib, "interception.lib")
-
-
-void KeybooardLayerRoutine(std::stop_token stopToken);
-
-
-int WINAPI WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR     lpCmdLine,
-	int       nCmdShow
-) {
-	std::jthread workRoutineThread(::KeybooardLayerRoutine);
-
-	try {
-		HICON trayIcon = ::LoadIconW(nullptr, IDI_APPLICATION); // системная иконка
-		auto trayWindow = H::Win32::TrayWindow{ hInstance, trayIcon, L"My Tray App" };
-
-		Keyboard::Platform::KeyboardEnumerator::GetInstance().SetDevicesChangedCallback([](const Keyboard::Platform::KeyboardDeviceInfoList& devices) {
-			LOG_DEBUG_D(L"DeviceList changed:");
-			for (const auto& device : devices) {
-				LOG_DEBUG_D(L"instanceId = {}, name = {}"
-					, device->instanceId
-					, device->name
-				);
-			}
-			});
-
-		trayWindow.AddMessageHook([](UINT msg, WPARAM w, LPARAM l) {
-			Keyboard::Platform::KeyboardEnumerator::GetInstance().HandleWindowsMessage(msg, w, l);
-			return false; // не перехватываем, просто пробрасываем
-			});
-
-		Keyboard::Platform::KeyboardEnumerator::GetInstance().StartMonitoring(trayWindow.GetHwnd());
-
-		trayWindow.RunMessageLoop();
-		workRoutineThread.request_stop();
-	}
-	catch (const std::exception& ex) {
-		LOG_ERROR_D("ex = {}", ex.what());
-		workRoutineThread.request_stop();
-	}
-
-	if (workRoutineThread.joinable())
-		workRoutineThread.join();
-
-	return 0;
-}
-
-
 
 
 class KeyProcessorProvider {
@@ -122,14 +76,21 @@ public:
 void KeybooardLayerRoutine(std::stop_token stopToken) {
 	const auto& allKeyboardDevices = Keyboard::Platform::KeyboardEnumerator::GetInstance().GetAllKeyboardDevices();
 
-	auto acpiKeyboardDeviceASUS = Keyboard::Platform::KeyboardEnumerator::GetInstance().FindDeviceByHardwareIdSubstring(L"ACPI\\ATK3001");
-	auto hidKeyboardDeviceTECLAST = Keyboard::Platform::KeyboardEnumerator::GetInstance().FindDeviceByHardwareIdSubstring(L"HID\\{00001124-0000-1000-8000-00805F9B34FB}_VID&000204E8_PID&7021&COL01");
+	// Asus Vivobook pro 16 (N7600PC) keyboard
+	auto acpiKeyboardDeviceASUS = Keyboard::Platform::KeyboardEnumerator::GetInstance().FindDeviceByHardwareIdSubstring(
+		L"ACPI\\ATK3001"
+	);
+	
+	// Teclast Bluetooth keyboard
+	auto hidKeyboardDeviceTECLAST = Keyboard::Platform::KeyboardEnumerator::GetInstance().FindDeviceByHardwareIdSubstring(
+		L"HID\\{00001124-0000-1000-8000-00805F9B34FB}_VID&000204E8_PID&7021&COL01"
+	);
 
 	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
 
 	if (acpiKeyboardDeviceASUS) {
 		keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
-			{ acpiKeyboardDeviceASUS }, // Asus Vivobook pro 16 (N7600PC) keyboard
+			{ acpiKeyboardDeviceASUS },
 			Keyboard::Core::LogicalKeyGroup::Arrows() |
 			Keyboard::Core::LogicalKeyGroup::Digits() |
 			Keyboard::Core::LogicalKeyGroup::Numpad() |
@@ -150,6 +111,7 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 
 		keyProcessors.push_back(KeyProcessorProvider::GetExtendingCapsLockFunctionalityProcessor(
 			{ hidKeyboardDeviceTECLAST },
+			Keyboard::Core::LogicalKeyGroup::Digits() |
 			Keyboard::Core::LogicalKeyGroup::Letters() -
 			Keyboard::Core::Enums::LogicalKey::Tilde,
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
@@ -158,11 +120,56 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 		keyProcessors.push_back(KeyProcessorProvider::GeReplacingKeyWithSymbolProcessor(
 			{ hidKeyboardDeviceTECLAST },
 			Keyboard::Core::Enums::LogicalKey::Tilde,
-			L'*',
+			L'`',
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
 		));
 	}
 
-	auto engine = KeyboardLayerEngine(std::move(keyProcessors));
-	engine.Run(stopToken);
+	auto keyboardLayerEngine = KeyboardLayerEngine(std::move(keyProcessors));
+	keyboardLayerEngine.Run(stopToken);
+}
+
+
+
+int WINAPI WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR     lpCmdLine,
+	int       nCmdShow
+) {
+	std::jthread workRoutineThread(::KeybooardLayerRoutine);
+
+	try {
+		HICON trayIcon = ::LoadIconW(nullptr, IDI_APPLICATION); // системная иконка
+		auto trayWindow = H::Win32::TrayWindow{ hInstance, trayIcon, L"KeyboardLayerService Tray App" };
+
+		Keyboard::Platform::KeyboardEnumerator::GetInstance().SetDevicesChangedCallback([](const Keyboard::Platform::KeyboardDeviceInfoList& devices) {
+			LOG_DEBUG_D(L"DeviceList changed:");
+			for (const auto& device : devices) {
+				LOG_DEBUG_D(L"instanceId = {}, name = {}"
+					, device->instanceId
+					, device->name
+				);
+			}
+			});
+
+		trayWindow.AddMessageHook([](UINT msg, WPARAM w, LPARAM l) {
+			Keyboard::Platform::KeyboardEnumerator::GetInstance().HandleWindowsMessage(msg, w, l);
+			return false; // не перехватываем, просто пробрасываем
+			});
+
+		Keyboard::Platform::KeyboardEnumerator::GetInstance().StartMonitoring(trayWindow.GetHwnd());
+
+		trayWindow.RunMessageLoop();
+		workRoutineThread.request_stop();
+	}
+	catch (const std::exception& ex) {
+		LOG_ERROR_D("ex = {}", ex.what());
+		workRoutineThread.request_stop();
+	}
+
+	if (workRoutineThread.joinable())
+		workRoutineThread.join();
+
+	return 0;
 }

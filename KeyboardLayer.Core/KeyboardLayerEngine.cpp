@@ -69,9 +69,6 @@ Interception::DeviceInfo KeyboardLayerEngine::GetDeviceInfo(InterceptionDevice d
 	std::wstring hardwareIdUpper = hardwareId;
 	std::transform(hardwareIdUpper.begin(), hardwareIdUpper.end(), hardwareIdUpper.begin(), ::towupper);
 
-	
-	// Here hardwareIdUpper == ACPI\VEN_ATK&DEV_3001
-	// but keyboardDevice.hardwareId = ACPI\\ATK3001
 	Keyboard::Platform::KeyboardDeviceInfo keyboardDeviceInfo;
 	keyboardDeviceInfo.instanceId = hardwareIdUpper;
 
