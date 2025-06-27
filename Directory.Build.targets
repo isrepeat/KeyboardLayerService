@@ -1,0 +1,10 @@
+<Project>
+  <!-- Import PROJECT.targets -->
+  <Import Project="$(MSBuildProjectDirectory)\$(MSBuildProjectName).targets"
+          Condition="Exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).targets')" />
+
+  <ItemGroup>
+    <None Include="$(MSBuildProjectDirectory)\$(MSBuildProjectName).targets"
+          Condition="Exists('$(MSBuildProjectDirectory)\$(MSBuildProjectName).targets')" />
+  </ItemGroup>
+</Project>
