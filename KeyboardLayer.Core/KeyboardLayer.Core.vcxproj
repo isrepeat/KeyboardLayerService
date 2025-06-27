@@ -73,25 +73,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\!VS_TMP\Build\$(PlatformToolset)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\!VS_TMP\Intermediate\$(PlatformToolset)\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)3rdParty\Interception\lib\$(PlatformShortName);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\!VS_TMP\Build\$(PlatformToolset)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\!VS_TMP\Intermediate\$(PlatformToolset)\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)3rdParty\Interception\lib\$(PlatformShortName);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)\!VS_TMP\Build\$(PlatformToolset)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\!VS_TMP\Intermediate\$(PlatformToolset)\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)3rdParty\Interception\lib\$(PlatformShortName);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\!VS_TMP\Build\$(PlatformToolset)\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)\!VS_TMP\Intermediate\$(PlatformToolset)\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir);$(ProjectDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)3rdParty\Interception\lib\$(PlatformShortName);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -155,31 +155,45 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="InterceptionKeyCodeMapper.cpp" />
-    <ClCompile Include="KeyboardLayerEngine.cpp" />
-    <ClCompile Include="LogicalKeyGroup.cpp" />
-    <ClCompile Include="SimpleKeyBlocker.cpp" />
-    <ClCompile Include="SimpleKeyRemapper.cpp" />
-    <ClCompile Include="WinMain.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DeviceInfo.h" />
-    <ClInclude Include="HidKeyCodes.h" />
-    <ClInclude Include="InterceptionKeyCode.h" />
-    <ClInclude Include="InterceptionKeyCodeMapper.h" />
-    <ClInclude Include="KeyboardLayerEngine.h" />
-    <ClInclude Include="IKeyCodeMapper.h" />
-    <ClInclude Include="IKeyFilter.h" />
-    <ClInclude Include="IKeyRemapper.h" />
-    <ClInclude Include="LogicalKey.h" />
-    <ClInclude Include="LogicalKeyGroup.h" />
-    <ClInclude Include="SimpleKeyBlocker.h" />
-    <ClInclude Include="SimpleKeyRemapper.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\UtilityHelpersLib\Helpers\Helpers.Raw\Helpers.Raw.vcxproj">
       <Project>{298ab331-24aa-4f41-916e-2206023f8085}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Interception\Actions\ExtendCapsLockFunctionalityAction.h" />
+    <ClInclude Include="Interception\Actions\IKeyAction.h" />
+    <ClInclude Include="Interception\Actions\Win32KeySymbolReplaceAction.h" />
+    <ClInclude Include="Interception\Actions\SimpleBlockAction.h" />
+    <ClInclude Include="Interception\Actions\SimpleRemapAction.h" />
+    <ClInclude Include="Interception\DeviceInfo.h" />
+    <ClInclude Include="Interception\InterceptionKeyCode.h" />
+    <ClInclude Include="Interception\InterceptionKeyCodeMapper.h" />
+    <ClInclude Include="Interception\KeyProcessor.h" />
+    <ClInclude Include="Interception\Rules\IKeyRule.h" />
+    <ClInclude Include="Interception\Rules\TrackDevicesAndKeysRule.h" />
+    <ClInclude Include="KeyboardLayerEngine.h" />
+    <ClInclude Include="Keyboard\Core\IKeyCodeMapper.h" />
+    <ClInclude Include="Keyboard\Core\LogicalKey.h" />
+    <ClInclude Include="Keyboard\Core\LogicalKeyGroup.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardDeviceInfo.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardEnumerator.h" />
+    <ClInclude Include="Keyboard\Platform\KeyboardParser.h" />
+    <ClInclude Include="Keyboard\Platform\Win32KeySender.h" />
+    <ClInclude Include="Keyboard\Platform\WindowsKeyCode.h" />
+    <ClInclude Include="Keyboard\Platform\ModifierState.h" />
+    <ClInclude Include="Keyboard\Platform\WindowsKeyCodeMapper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Interception\InterceptionKeyCodeMapper.cpp" />
+    <ClCompile Include="Interception\KeyProcessor.cpp" />
+    <ClCompile Include="KeyboardLayerEngine.cpp" />
+    <ClCompile Include="Keyboard\Core\LogicalKeyGroup.cpp" />
+    <ClCompile Include="Keyboard\Platform\KeyboardEnumerator.cpp" />
+    <ClCompile Include="Keyboard\Platform\KeyboardParser.cpp" />
+    <ClCompile Include="Keyboard\Platform\ModifierState.cpp" />
+    <ClCompile Include="Keyboard\Platform\Win32KeySender.cpp" />
+    <ClCompile Include="Keyboard\Platform\WindowsKeyCodeMapper.cpp" />
+    <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,66 +5,123 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\KeyCode">
-      <UniqueIdentifier>{c17e2e32-9b30-4492-ae83-d0ffbb3ee832}</UniqueIdentifier>
+    <Filter Include="Source Files\Keyboard">
+      <UniqueIdentifier>{944d04e1-b40e-4f74-a478-546604cebf0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Keyboard\Core">
+      <UniqueIdentifier>{21ad8eb6-888e-4927-86e6-7e266277f690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Keyboard\Platform">
+      <UniqueIdentifier>{afaba13b-7365-4ad0-8bab-ad99bc69e7ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interception">
+      <UniqueIdentifier>{68c84ca5-af3f-492a-b70a-424d8a2438f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interception\Actions">
+      <UniqueIdentifier>{c847fce6-bba5-4970-983f-b0267fe57150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interception\Rules">
+      <UniqueIdentifier>{891c8d11-b351-4165-94c7-dc64a54aeb1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KeyboardLayerEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InterceptionKeyCodeMapper.cpp">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleKeyBlocker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleKeyRemapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogicalKeyGroup.cpp">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClCompile>
-    <ClCompile Include="WinMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DeviceInfo.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Keyboard\Core\LogicalKey.h">
+      <Filter>Source Files\Keyboard\Core</Filter>
     </ClInclude>
-    <ClInclude Include="IKeyFilter.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Keyboard\Core\LogicalKeyGroup.h">
+      <Filter>Source Files\Keyboard\Core</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleKeyBlocker.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Keyboard\Platform\ModifierState.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
     </ClInclude>
     <ClInclude Include="KeyboardLayerEngine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="IKeyRemapper.h">
+    <ClInclude Include="Interception\DeviceInfo.h">
+      <Filter>Source Files\Interception</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\InterceptionKeyCode.h">
+      <Filter>Source Files\Interception</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\InterceptionKeyCodeMapper.h">
+      <Filter>Source Files\Interception</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Core\IKeyCodeMapper.h">
+      <Filter>Source Files\Keyboard\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\WindowsKeyCodeMapper.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\WindowsKeyCode.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\Win32KeySender.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\KeyProcessor.h">
+      <Filter>Source Files\Interception</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\Win32KeySymbolReplaceAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\SimpleBlockAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\SimpleRemapAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Rules\IKeyRule.h">
+      <Filter>Source Files\Interception\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Rules\TrackDevicesAndKeysRule.h">
+      <Filter>Source Files\Interception\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\IKeyAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Interception\Actions\ExtendCapsLockFunctionalityAction.h">
+      <Filter>Source Files\Interception\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardParser.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardDeviceInfo.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard\Platform\KeyboardEnumerator.h">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Keyboard\Core\LogicalKeyGroup.cpp">
+      <Filter>Source Files\Keyboard\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\ModifierState.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardLayerEngine.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleKeyRemapper.h">
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HidKeyCodes.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
-    <ClInclude Include="InterceptionKeyCode.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
-    <ClInclude Include="InterceptionKeyCodeMapper.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
-    <ClInclude Include="IKeyCodeMapper.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
-    <ClInclude Include="LogicalKey.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
-    <ClInclude Include="LogicalKeyGroup.h">
-      <Filter>Source Files\KeyCode</Filter>
-    </ClInclude>
+    </ClCompile>
+    <ClCompile Include="Interception\InterceptionKeyCodeMapper.cpp">
+      <Filter>Source Files\Interception</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\WindowsKeyCodeMapper.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\Win32KeySender.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Interception\KeyProcessor.cpp">
+      <Filter>Source Files\Interception</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\KeyboardParser.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard\Platform\KeyboardEnumerator.cpp">
+      <Filter>Source Files\Keyboard\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

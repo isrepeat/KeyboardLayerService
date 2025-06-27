@@ -1,26 +1,28 @@
 #pragma once
-#include "3rdParty/Interception/interception.h"
-#include "IKeyRemapper.h"
-#include "IKeyFilter.h"
-#include "DeviceInfo.h"
+#include <3rdParty/Interception/interception.h>
+
+#include "Interception/KeyProcessor.h"
+#include "Interception/DeviceInfo.h"
+
 #include <memory>
+#include <vector>
 #include <thread>
 
 class KeyboardLayerEngine {
 public:
-	KeyboardLayerEngine(
-		std::unique_ptr<IKeyFilter> keyFilter,
-		std::unique_ptr<IKeyRemapper> keyRemapper);
+	KeyboardLayerEngine(std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors);
 
 	void Run(std::stop_token stopToken);
 
 private:
-	std::unique_ptr<IKeyFilter> keyFilter;
-	std::unique_ptr<IKeyRemapper> keyRemapper;
+	Interception::DeviceInfo GetDeviceInfo(InterceptionDevice device);
+	std::wstring GetHardwareId(InterceptionDevice device);
 
-	InterceptionContext context;
+	bool ApplyKeyProcessors(Interception::DeviceInfo, InterceptionKeyStroke& keyStrokeRef);
 
 private:
-	std::wstring GetHardwareId(int device);
-	DeviceInfo GetDeviceInfo(int device);
+	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
+	InterceptionContext context;
+
+	std::unordered_map<std::wstring, Interception::DeviceInfo> cachedDeviceInfos;
 };
