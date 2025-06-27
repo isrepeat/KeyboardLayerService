@@ -5,18 +5,30 @@ namespace Keyboard::Core {
 		: keys{ keys }
 	{}
 
-	LogicalKeyGroup LogicalKeyGroup::operator|(const LogicalKeyGroup& other) const {
-		LogicalKeyGroup result = *this;
-		result.keys.insert(other.keys.begin(), other.keys.end());
-		return result;
-	}
-
 	const std::set<Enums::LogicalKey>& LogicalKeyGroup::GetKeys() const {
 		return this->keys;
 	}
 
 	bool LogicalKeyGroup::Contains(Enums::LogicalKey key) const {
 		return this->keys.contains(key);
+	}
+
+	LogicalKeyGroup LogicalKeyGroup::operator|(const LogicalKeyGroup& other) const {
+		LogicalKeyGroup result = *this;
+		result.keys.insert(other.keys.begin(), other.keys.end());
+		return result;
+	}
+
+	LogicalKeyGroup LogicalKeyGroup::operator+(const Enums::LogicalKey& logicalKey) const {
+		LogicalKeyGroup result = *this;
+		result.keys.insert(logicalKey);
+		return result;
+	}
+
+	LogicalKeyGroup LogicalKeyGroup::operator-(const Enums::LogicalKey& logicalKey) const {
+		LogicalKeyGroup result = *this;
+		result.keys.erase(logicalKey);
+		return result;
 	}
 
 	LogicalKeyGroup::operator std::set<Enums::LogicalKey>() const {

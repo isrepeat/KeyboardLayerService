@@ -8,10 +8,12 @@ namespace Keyboard::Core {
 		LogicalKeyGroup() = default;
 		LogicalKeyGroup(std::initializer_list<Enums::LogicalKey> keys);
 
-		LogicalKeyGroup operator|(const LogicalKeyGroup& other) const;
 		const std::set<Enums::LogicalKey>& GetKeys() const;
 		bool Contains(Enums::LogicalKey key) const;
 
+		LogicalKeyGroup operator|(const LogicalKeyGroup& other) const;
+		LogicalKeyGroup operator+(const Enums::LogicalKey& logicalKey) const;
+		LogicalKeyGroup operator-(const Enums::LogicalKey& logicalKey) const;
 		operator std::set<Enums::LogicalKey>() const;
 
 		static LogicalKeyGroup Arrows();
