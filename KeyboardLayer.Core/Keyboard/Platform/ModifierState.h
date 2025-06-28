@@ -18,5 +18,7 @@ namespace Keyboard::Platform {
 
 		// ѕровер€ет, зажата ли клавиша Alt (лева€ или права€).
 		static bool IsAltPressed();
+
+		static bool IsWinPressed();
 	};
 }

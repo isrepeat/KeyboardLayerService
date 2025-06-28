@@ -39,6 +39,9 @@ namespace Interception::Actions {
 		Enums::ActionResult Apply(InterceptionKeyStroke& keyStroke) const override {
 			bool isCapsLockActive = Keyboard::Platform::ModifierState::IsCapsLockActive();
 			bool isShiftPressed = Keyboard::Platform::ModifierState::IsShiftPressed();
+			bool isCtrlPressed = Keyboard::Platform::ModifierState::IsCtrlPressed();
+			bool isAltPressed = Keyboard::Platform::ModifierState::IsAltPressed();
+			bool isWinPressed = Keyboard::Platform::ModifierState::IsWinPressed();
 
 			if (isCapsLockActive) {
 				auto logicalKey = this->interceptionKeyCodeMapper.FromNative(keyStroke.code);
@@ -47,6 +50,10 @@ namespace Interception::Actions {
 				}
 
 				if (this->digitsLogicalKKeyGroup.Contains(*logicalKey)) {
+					if (!this->digitsToFunctionalsMap.contains(*logicalKey)) {
+						return Enums::ActionResult::NotHandled;
+					}
+
 					auto functionalLogicalKey = this->digitsToFunctionalsMap.at(*logicalKey);
 
 					auto win32NativeKey = this->windowsKeyCodeMapper.ToNative(functionalLogicalKey);
@@ -65,6 +72,10 @@ namespace Interception::Actions {
 					return Enums::ActionResult::Handled;
 				}
 				else {
+					if (isCtrlPressed || isAltPressed || isWinPressed) {
+						return Enums::ActionResult::NotHandled;
+					}
+
 					auto win32NativeKey = this->windowsKeyCodeMapper.ToNative(*logicalKey);
 					if (!win32NativeKey) {
 						return Enums::ActionResult::NotHandled;
