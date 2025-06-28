@@ -31,6 +31,16 @@ namespace Keyboard::Core {
 		return result;
 	}
 
+	LogicalKeyGroup& LogicalKeyGroup::operator+=(const Enums::LogicalKey& logicalKey) {
+		this->keys.insert(logicalKey);
+		return *this;
+	}
+
+	LogicalKeyGroup& LogicalKeyGroup::operator-=(const Enums::LogicalKey& logicalKey) {
+		this->keys.erase(logicalKey);
+		return *this;
+	}
+
 	LogicalKeyGroup::operator std::set<Enums::LogicalKey>() const {
 		return this->keys;
 	}
