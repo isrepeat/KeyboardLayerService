@@ -14,6 +14,10 @@ namespace Keyboard::Core {
 		LogicalKeyGroup operator|(const LogicalKeyGroup& other) const;
 		LogicalKeyGroup operator+(const Enums::LogicalKey& logicalKey) const;
 		LogicalKeyGroup operator-(const Enums::LogicalKey& logicalKey) const;
+		
+		LogicalKeyGroup& operator+=(const Enums::LogicalKey& logicalKey);
+		LogicalKeyGroup& operator-=(const Enums::LogicalKey& logicalKey);
+		
 		operator std::set<Enums::LogicalKey>() const;
 
 		static LogicalKeyGroup Arrows();

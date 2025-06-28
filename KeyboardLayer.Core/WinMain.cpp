@@ -94,34 +94,45 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 	std::vector<std::shared_ptr<Interception::KeyProcessor>> keyProcessors;
 
 	if (acpiKeyboardDeviceASUS) {
-		keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
-			{ acpiKeyboardDeviceASUS },
+		auto trackedKeysToBlockingASUS =
 			Keyboard::Core::LogicalKeyGroup::Arrows() |
 			Keyboard::Core::LogicalKeyGroup::Digits() |
 			Keyboard::Core::LogicalKeyGroup::Numpad() |
 			Keyboard::Core::LogicalKeyGroup::Letters() |
 			Keyboard::Core::LogicalKeyGroup::Modifiers() |
 			Keyboard::Core::LogicalKeyGroup::ControlKeys() |
-			Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+			Keyboard::Core::LogicalKeyGroup::FunctionKeys();
+
+		trackedKeysToBlockingASUS -= Keyboard::Core::Enums::LogicalKey::Space;
+
+		keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
+			{ acpiKeyboardDeviceASUS },
+			trackedKeysToBlockingASUS,
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
 		));
 	}
 
 	if (hidKeyboardDeviceTECLAST) {
-		keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
-			{ hidKeyboardDeviceTECLAST },
-			Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
-			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
-		));
+		//keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
+		//	{ hidKeyboardDeviceTECLAST },
+		//	Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+		//	Interception::KeyProcessor::ChainPolicy::AlwaysContinue
+		//));
+
+
+		auto trackedKeysToExtendingCapsLockFunctionalityTECLAST =
+			Keyboard::Core::LogicalKeyGroup::Digits() |
+			Keyboard::Core::LogicalKeyGroup::Letters();
+
+		trackedKeysToExtendingCapsLockFunctionalityTECLAST -= Keyboard::Core::Enums::LogicalKey::Tilde;
 
 		keyProcessors.push_back(KeyProcessorProvider::GetExtendingCapsLockFunctionalityProcessor(
 			{ hidKeyboardDeviceTECLAST },
-			Keyboard::Core::LogicalKeyGroup::Digits() |
-			Keyboard::Core::LogicalKeyGroup::Letters() -
-			Keyboard::Core::Enums::LogicalKey::Tilde,
+			trackedKeysToExtendingCapsLockFunctionalityTECLAST,
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
 		));
 
+		
 		keyProcessors.push_back(KeyProcessorProvider::GeReplacingKeyWithSymbolProcessor(
 			{ hidKeyboardDeviceTECLAST },
 			Keyboard::Core::Enums::LogicalKey::Tilde,

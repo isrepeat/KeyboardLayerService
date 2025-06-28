@@ -25,4 +25,9 @@ namespace Keyboard::Platform {
 		return (GetAsyncKeyState(VK_LMENU) & 0x8000) != 0 ||
 			(GetAsyncKeyState(VK_RMENU) & 0x8000) != 0;
 	}
+
+	bool ModifierState::IsWinPressed() {
+		return (GetAsyncKeyState(VK_LWIN) & 0x8000) != 0 ||
+			(GetAsyncKeyState(VK_RWIN) & 0x8000) != 0;
+	}
 }
