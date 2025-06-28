@@ -21,18 +21,18 @@ namespace Interception::Actions {
 			, interceptionKeyCodeMapper{}
 			, digitsLogicalKKeyGroup{ Keyboard::Core::LogicalKeyGroup::Digits() }
 			, digitsToFunctionalsMap{ 
-				{ Keyboard::Core::Enums::LogicalKey::Digit1, Keyboard::Core::Enums::LogicalKey::F1 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit2, Keyboard::Core::Enums::LogicalKey::F2 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit3, Keyboard::Core::Enums::LogicalKey::F3 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit4, Keyboard::Core::Enums::LogicalKey::F4 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit1, Keyboard::Core::Enums::LogicalKey::F1 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit2, Keyboard::Core::Enums::LogicalKey::F2 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit3, Keyboard::Core::Enums::LogicalKey::F3 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit4, Keyboard::Core::Enums::LogicalKey::F4 },
 				{ Keyboard::Core::Enums::LogicalKey::Digit5, Keyboard::Core::Enums::LogicalKey::F5 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit6, Keyboard::Core::Enums::LogicalKey::F6 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit7, Keyboard::Core::Enums::LogicalKey::F7 },
-				{ Keyboard::Core::Enums::LogicalKey::Digit8, Keyboard::Core::Enums::LogicalKey::F8 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit6, Keyboard::Core::Enums::LogicalKey::F6 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit7, Keyboard::Core::Enums::LogicalKey::F7 },
+				//{ Keyboard::Core::Enums::LogicalKey::Digit8, Keyboard::Core::Enums::LogicalKey::F8 },
 				{ Keyboard::Core::Enums::LogicalKey::Digit9, Keyboard::Core::Enums::LogicalKey::F9 },
 				{ Keyboard::Core::Enums::LogicalKey::Digit0, Keyboard::Core::Enums::LogicalKey::F10 },
 				{ Keyboard::Core::Enums::LogicalKey::Minus, Keyboard::Core::Enums::LogicalKey::F11 },
-				{ Keyboard::Core::Enums::LogicalKey::Plus, Keyboard::Core::Enums::LogicalKey::F12 }, 
+				//{ Keyboard::Core::Enums::LogicalKey::Plus, Keyboard::Core::Enums::LogicalKey::F12 }, 
 			}
 		{}
 
