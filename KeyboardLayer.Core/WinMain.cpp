@@ -102,17 +102,18 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 			Keyboard::Core::LogicalKeyGroup::Letters() |
 			Keyboard::Core::LogicalKeyGroup::Modifiers() |
 			Keyboard::Core::LogicalKeyGroup::ControlKeys() |
-			Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+			Keyboard::Core::LogicalKeyGroup::FunctionKeys() -
+			Keyboard::Core::Enums::LogicalKey::Space,
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
 		));
 	}
 
 	if (hidKeyboardDeviceTECLAST) {
-		keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
-			{ hidKeyboardDeviceTECLAST },
-			Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
-			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
-		));
+		//keyProcessors.push_back(KeyProcessorProvider::GetKeysBlockingProcessor(
+		//	{ hidKeyboardDeviceTECLAST },
+		//	Keyboard::Core::LogicalKeyGroup::FunctionKeys(),
+		//	Interception::KeyProcessor::ChainPolicy::AlwaysContinue
+		//));
 
 		keyProcessors.push_back(KeyProcessorProvider::GetExtendingCapsLockFunctionalityProcessor(
 			{ hidKeyboardDeviceTECLAST },
@@ -121,7 +122,7 @@ void KeybooardLayerRoutine(std::stop_token stopToken) {
 			Keyboard::Core::Enums::LogicalKey::Tilde,
 			Interception::KeyProcessor::ChainPolicy::AlwaysContinue
 		));
-
+		
 		keyProcessors.push_back(KeyProcessorProvider::GeReplacingKeyWithSymbolProcessor(
 			{ hidKeyboardDeviceTECLAST },
 			Keyboard::Core::Enums::LogicalKey::Tilde,
